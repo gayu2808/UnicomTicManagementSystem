@@ -11,8 +11,7 @@ namespace Schoolmanagement.Models
         public int StaffId { get; set; }
         public string StaffName { get; set; }
         public string StaffAddress { get; set; }
-        public int phone_number { get; set; }
-        public string Email { get; set; }
         public int CourseId { get; set; }
+
     }
 }

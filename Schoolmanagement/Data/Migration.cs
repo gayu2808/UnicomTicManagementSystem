@@ -21,6 +21,7 @@ namespace Schoolmanagement.Data
                         CourseName TEXT NOT NULL
                     );
 
+
                     CREATE TABLE IF NOT EXISTS Lecturers (
                         LecturerId INTEGER PRIMARY KEY AUTOINCREMENT,
                         Name TEXT NOT NULL,
@@ -41,11 +42,11 @@ namespace Schoolmanagement.Data
                     );
 
                     CREATE TABLE IF NOT EXISTS Students (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Name TEXT NOT NULL,
-                        Address TEXT NOT NULL,
-                        SectionId INTEGER,
-                        FOREIGN KEY (SectionId) REFERENCES Sections(Id)
+                        StudentId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        StudentName TEXT NOT NULL,
+                        StudentAddress TEXT NOT NULL,
+                        CourseId INTEGER,
+                        FOREIGN KEY (CourseId) REFERENCES Courses(CourseId)
                     );
 
                     CREATE TABLE IF NOT EXISTS Timetable (
@@ -75,8 +76,7 @@ namespace Schoolmanagement.Data
                     CREATE TABLE IF NOT EXISTS Staffs (
                         StaffId INTEGER PRIMARY KEY AUTOINCREMENT,
                         StaffName TEXT NOT NULL,
-                        StaffAddress TEXT NOT NULL,
-                        
+                        StaffAddress TEXT NOT NULL,                   
                         CourseId INTEGER,
                         FOREIGN KEY (CourseId) REFERENCES Courses(CourseId)
                     );

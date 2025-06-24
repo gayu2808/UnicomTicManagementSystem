@@ -16,6 +16,8 @@ namespace Schoolmanagement
         static void Main()
         {
             Migration.CreateTables();
+
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new LoginForm());

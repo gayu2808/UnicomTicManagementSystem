@@ -11,54 +11,56 @@ namespace Schoolmanagement.Controller
 {
     public class Examcontroller
     {
-        
-        
-    }
-    public class ExamRepository
-    {
+        public void AddExam(Exam exam)
+        {
+            using (var conn = DbConfig.GetConnection())
+            {
+                var cmd = new SQLiteCommand("INSERT INTO Exams (ExamName, SubjectId) VALUES (@Name, @SubjectId)", conn);
+                cmd.Parameters.AddWithValue("@Name", exam.ExamName);
+                cmd.Parameters.AddWithValue("@SubjectId", exam.SubjectId); // Assuming SubjectId is part of the 'exam' object
+                cmd.ExecuteNonQuery();
+
+            }
+        }
+
         public List<Exam> GetAllExams()
         {
             var exams = new List<Exam>();
 
             using (var conn = DbConfig.GetConnection())
             {
-                var cmd = new SQLiteCommand("SELECT ExamsId, Name FROM Exams", conn);
+                var cmd = new SQLiteCommand(
+                    @"SELECT Exams.ExamName, Subjects.SubjectId 
+              FROM Exams 
+              LEFT JOIN Subjects ON Exams.SubjectId = Subjects.SubjectId",
+                    conn);
 
-                using (var reader = cmd.ExecuteReader())
+                SQLiteDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
                 {
-                    while (reader.Read())
+                    var exam = new Exam()
                     {
-                        var exam = new Exam
-                        {
-                            ExamId = reader.GetInt32(0),
+                        ExamName = reader["ExamName"].ToString(),
+                        // Check if SubjectId is DBNull and handle accordingly
+                        SubjectId = reader["SubjectId"] == DBNull.Value ? 0 : Convert.ToInt32(reader["SubjectId"]),
+                    };
 
-
-                        };
-                        exams.Add(exam);
-                    }
+                    exams.Add(exam);
                 }
             }
 
             return exams;
         }
 
-        public void AddExam(Exam exam)
-        {
-            using (var conn = DbConfig.GetConnection())
-            {
-                var cmd = new SQLiteCommand("INSERT INTO Exams (ExamId, Name) VALUES (@ExamId, @Name)", conn);
-                cmd.Parameters.AddWithValue("@ExamId",exam.ExamId);
-                cmd.Parameters.AddWithValue("@Name", exam.ExamName ?? (object)DBNull.Value);
-                cmd.ExecuteNonQuery();
-            }
-        }
+
 
         public void UpdateExam(Exam exam)
         {
             using (var conn = DbConfig.GetConnection())
             {
-                var cmd = new SQLiteCommand("UPDATE Exams SET Name = @Name WHERE ExamId = @ExamId", conn);
-                cmd.Parameters.AddWithValue("@Name", exam.ExamName ?? (object)DBNull.Value);
+                var cmd = new SQLiteCommand("UPDATE Exams SET ExamName = @Name WHERE ExamId = @ExamId", conn);
+                cmd.Parameters.AddWithValue("@Name", exam.ExamName);
                 cmd.Parameters.AddWithValue("@ExamId", exam.ExamId);
                 cmd.ExecuteNonQuery();
             }
@@ -69,16 +71,16 @@ namespace Schoolmanagement.Controller
             using (var conn = DbConfig.GetConnection())
             {
                 var cmd = new SQLiteCommand("DELETE FROM Exams WHERE ExamId = @ExamId", conn);
-                cmd.Parameters.AddWithValue("@CourseId", examId);
+                cmd.Parameters.AddWithValue("@ExamId", examId);
                 cmd.ExecuteNonQuery();
             }
         }
 
-        public Exam GetExamById(int ExamId) 
+        public Exam GetExamById(int ExamId)
         {
             using (var conn = DbConfig.GetConnection())
             {
-                var cmd = new SQLiteCommand("SELECT ExamId, Name FROM Exams WHERE ExamId = @ExamId", conn);
+                var cmd = new SQLiteCommand("SELECT ExamId, ExamName FROM Exams WHERE ExamId = @ExamId", conn);
                 cmd.Parameters.AddWithValue("@ExamId", ExamId);
 
                 using (var reader = cmd.ExecuteReader())
@@ -88,7 +90,7 @@ namespace Schoolmanagement.Controller
                         return new Exam
                         {
                             ExamId = reader.GetInt32(0),
-                            ExamName = reader.IsDBNull(1) ? null : reader.GetString(1)
+                            ExamName = reader.GetString(1)
                         };
                     }
                 }
@@ -97,7 +99,5 @@ namespace Schoolmanagement.Controller
         }
     }
 }
-
-
     
 

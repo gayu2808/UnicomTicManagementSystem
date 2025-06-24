@@ -12,5 +12,6 @@ namespace Schoolmanagement.Models
         public string StudentName { get; set; }
         public string StudentAddress { get; set; }
         public int CourseId { get; set; }
+        public string CourseName { get; set;}
     }
 }
